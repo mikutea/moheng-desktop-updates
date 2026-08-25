@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    >
+    <meta name="color-scheme" content="dark light">
+    <title>Moheng Desktop Updates</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #07100f;
+        color: #e9f4ef;
+      }
+      * { box-sizing: border-box; }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          radial-gradient(circle at 20% 10%, rgba(61, 178, 137, .18), transparent 34rem),
+          #07100f;
+      }
+      main {
+        width: min(680px, 100%);
+        padding: clamp(28px, 6vw, 52px);
+        border: 1px solid rgba(180, 226, 209, .18);
+        border-radius: 24px;
+        background: rgba(10, 25, 22, .86);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, .34);
+      }
+      .eyebrow { color: #80d5b7; letter-spacing: .12em; text-transform: uppercase; }
+      h1 { margin: 12px 0 10px; font-size: clamp(32px, 7vw, 58px); line-height: 1; }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 20px 0;
+        padding: 10px 14px;
+        border: 1px solid rgba(255, 206, 112, .3);
+        border-radius: 999px;
+        color: #ffe0a3;
+        background: rgba(111, 70, 7, .25);
+        font-weight: 700;
+      }
+      .dot { width: 9px; height: 9px; border-radius: 50%; background: #ffbd3f; }
+      p { color: #b7c9c2; font-size: 17px; line-height: 1.65; }
+      code { color: #c9f7e7; }
+      small { display: block; margin-top: 26px; color: #7f9890; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">Official Windows update surface</div>
+      <h1>墨衡 · Moheng</h1>
+      <div class="status"><span class="dot" aria-hidden="true"></span>bootstrap_locked</div>
+      <p>
+        正式更新通道尚未激活。目前没有生产版 <code>stable.json</code>，也没有获准发布的
+        Windows 安装包。客户端应在更新源缺失时安全停止更新。
+      </p>
+      <p>
+        The production update channel is intentionally absent. No installer or
+        client feed is currently authorized for publication.
+      </p>
+      <small>Public status page only · not an update manifest</small>
+    </main>
+  </body>
+</html>

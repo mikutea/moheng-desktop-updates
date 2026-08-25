@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "moheng.public-update-status.v1",
+  "channel": "stable",
+  "state": "bootstrap_locked",
+  "clientFeed": false,
+  "feedPublished": false,
+  "installerPublished": false,
+  "message": "Informational status only; this document is not a Moheng client update feed."
+}
