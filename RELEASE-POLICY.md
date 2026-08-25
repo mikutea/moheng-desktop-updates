@@ -47,8 +47,11 @@ For an approved release:
    manifest.
 8. Publish the signed channel manifest and probe the public endpoint.
 
-Published versioned assets and signed manifests are append-only. A release is
-never repaired in place; corrections use a new version and release sequence.
+Published versioned assets and versioned manifest snapshots are append-only. A
+release is never repaired in place; corrections use a new version and release
+sequence. The fixed `channels/stable.json` path is the signed channel pointer:
+it may only be replaced atomically after its new signed contents and monotonic
+sequence have passed every release gate.
 
 ## Prohibited content and actions
 
