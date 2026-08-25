@@ -6,7 +6,10 @@ on:
     paths:
       - "docs/**"
       - ".github/workflows/pages.yml"
-  workflow_dispatch:
+  pull_request:
+    paths:
+      - "docs/**"
+      - ".github/workflows/pages.yml"
 
 permissions:
   contents: read
@@ -16,8 +19,76 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    name: Validate locked update surface
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Enforce bootstrap lock
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          docs = Path("docs")
+          expected = {
+              "channels/README.md",
+              "index.html",
+              "status.json",
+          }
+          actual = {
+              path.relative_to(docs).as_posix()
+              for path in docs.rglob("*")
+              if path.is_file()
+          }
+          if actual != expected:
+              raise SystemExit(
+                  f"bootstrap_locked docs allowlist mismatch: {sorted(actual)}"
+              )
+
+          status = json.loads((docs / "status.json").read_text(encoding="utf-8"))
+          expected_fields = {
+              "schemaVersion",
+              "channel",
+              "state",
+              "clientFeed",
+              "feedPublished",
+              "installerPublished",
+              "message",
+          }
+          if set(status) != expected_fields:
+              raise SystemExit("bootstrap status fields are invalid")
+          if status["schemaVersion"] != "moheng.public-update-status.v1":
+              raise SystemExit("bootstrap status schema is invalid")
+          if status["channel"] != "stable" or status["state"] != "bootstrap_locked":
+              raise SystemExit("bootstrap lock state changed without activation workflow")
+          for field in ("clientFeed", "feedPublished", "installerPublished"):
+              if status[field] is not False:
+                  raise SystemExit(f"{field} must remain false while bootstrap is locked")
+
+          forbidden = re.compile(
+              r"BEGIN (?:OPENSSH |RSA |EC )?PRIVATE KEY|"
+              r"github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]+|"
+              r"AKIA[0-9A-Z]{16}"
+          )
+          for relative in sorted(actual):
+              path = docs / relative
+              if path.stat().st_size > 128 * 1024:
+                  raise SystemExit(f"unexpectedly large public status file: {relative}")
+              if forbidden.search(path.read_text(encoding="utf-8")):
+                  raise SystemExit(f"potential secret in public status file: {relative}")
+          PY
+
   deploy:
     name: Deploy GitHub Pages
+    needs: validate
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
